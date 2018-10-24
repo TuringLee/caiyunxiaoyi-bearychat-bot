@@ -1,0 +1,14 @@
+{
+  "name": "caiyunxiaoyi-bearychat-bot",
+  "version": "0.0.1",
+  "private": true,
+  "author": "bitwater <luosanshui@foxmail.com>",
+  "description": "Xiaoyi bearychat bot, a translator.",
+  "dependencies": {
+    "hubot": "^3.1.1",
+    "hubot-bearychat": "^0.7.2"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
