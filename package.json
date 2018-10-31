@@ -6,7 +6,8 @@
   "description": "Xiaoyi bearychat bot, a translator.",
   "dependencies": {
     "hubot": "^3.1.1",
-    "hubot-bearychat": "^0.7.2"
+    "hubot-bearychat": "^0.7.2",
+    "websocket": "^1.0.28"
   },
   "engines": {
     "node": "0.10.x"

@@ -4,9 +4,14 @@
 # Date: 24/10/2018
 # Desc:
 # Copyright (c) 2018 caiyunapp.com. All rights reserved.
- 
+
 IS_AUTO = 'XIAOYI_ROOM_IS_AUTO_'
 XIAOYI_API_TOKEN = process.env.XIAOYI_API_TOKEN
+XIAOYI_AROUSE_KEYWORD = /^(小译 |xiaoyi |lingocloud |LingoCloud )|@<==bxc32=>/i
+STORY_KEYWORD = /故事|讲故事|讲个故事|讲个故事关于|讲个故事 关于/
+STORY_SOCKET = 'ws://192.168.1.76:7785/ws'
+# STORY_SOCKET = 'ws://story.in.caiyunai.com/ws'
+WebSocketClient = require('websocket').client
 
 if !XIAOYI_API_TOKEN
   throw new Error('env variable XIAOYI_API_TOKEN is required')
@@ -18,7 +23,7 @@ module.exports = (robot) ->
     text = res.message.user.message.text
     ROOM_KEY = IS_AUTO + res.message.room.vchannelId
     roomSwitch = robot.brain.get(ROOM_KEY)
-    console.log('---------------message----------------\n', res.message)
+    console.log('----------message----------\n', res.message)
 
     if (/小译开门|xiaoyi fire|xiaoyifire|xiaoyi open|xiaoyiopen/.test(text))
       robot.brain.set(ROOM_KEY, true)
@@ -33,21 +38,25 @@ module.exports = (robot) ->
       return
 
     if roomSwitch == true
-      requestTranslator(res, text)
+      dispatch(res, text, res.message.user.id)
       return
     else
-      if (/小译 (.*)|=bxc32/i).test(text)
-        text = text.replace('小译 ', '')
-        requestTranslator(res, text, true)
+      if (XIAOYI_AROUSE_KEYWORD).test(text)
+        text = text.replace(XIAOYI_AROUSE_KEYWORD, '')
+        dispatch(res, text, res.message.user.id, true)
       return
 
-  # robot.respond /小译 (.*)/i, (res) ->
-  #   text = res.match[1].replace('小译 ', '')
-  #   requestTranslator(res, text)
+ dispatch = (res, text, fromId, isReply) ->
+  if STORY_KEYWORD.test(text)
+    connectStoryteller(res, text)
+  else
+    requestTranslator(res, text, fromId, isReply)
+
 
 requestTranslator = (res, text, fromId, isReply) ->
+    console.log('isURL', isURL(text), text)
     if isURL(text)
-      reqShareHtml(res, text, '', isReply)
+      reqShareHtml(res, text, fromId, isReply)
       return
     type = 'en2zh'
     lang = detectLang text
@@ -59,7 +68,7 @@ requestTranslator = (res, text, fromId, isReply) ->
     data = JSON.stringify({
       detect: true,
       media: 'text',
-      request_id: 'xiaoyi-hubot',
+      request_id: fromId || 'xiaoyi-hubot',
       source: text,
       trans_type: type,
     })
@@ -86,7 +95,7 @@ requestTranslator = (res, text, fromId, isReply) ->
           console.error(json)
           res.send body
 
-reqShareHtml = (res, text, fromUserName, isReply) ->
+reqShareHtml = (res, text, fromId, isReply) ->
   type = "en2zh"
   url = text.replace(/\n|\r|\t/, '')
   if (url.indexOf("http") < 0)
@@ -94,7 +103,7 @@ reqShareHtml = (res, text, fromUserName, isReply) ->
   console.log(url)
   data = JSON.stringify({
     "user_id": "5a096eec830f7876a48aac47",
-    "browser_id": fromUserName,
+    "browser_id": fromId,
     "url": url,
     "lang": "zh"
   })
@@ -111,6 +120,7 @@ reqShareHtml = (res, text, fromUserName, isReply) ->
         console.log(json)
         if json.rc == 0
           article = json.article
+          article.public_url = article.public_url.replace('read_mode', 'read_mode_web')
           reMeg = "[#{article.title_target}](#{article.public_url})\n#{article.contentDesc}"
           if article.contentImg
             reMeg = reMeg + "\n![#{article.title}](#{article.contentImg})"
@@ -129,7 +139,35 @@ reqShareHtml = (res, text, fromUserName, isReply) ->
         #   picurl: share.icon_url,
         #   url: share.share_url
         # });
-      
+
+connectStoryteller = (res, text, fromId) ->
+  client = new WebSocketClient()
+  client.on('connect', (connection) ->
+    console.log('WebSocket Client Connected', connection.connected)
+    connection.on('error', (error) ->
+        console.log("Connection Error: " + error.toString())
+    )
+    connection.on('close', () ->
+        console.log('echo-protocol Connection Closed')
+    )
+    connection.on('message', (message) ->
+      # console.log("Received: ", message)
+      if (message.type == 'utf8')
+        console.log("Received: '" + message.utf8Data + "'")
+        json = JSON.parse message.utf8Data
+        res.send json.target[0]
+    )
+    connection.send(JSON.stringify({
+        "source_lang": 'zh',
+        "source": [text]
+      }
+    ))
+  )
+  client.on('connectFailed', (error) ->
+    console.log('Connect Error: ' + error.toString())
+  )
+  client.connect(STORY_SOCKET)
+
 detectLang = (str) ->
     lang = 'en'
     zhStr = str.match(/[\u4e00-\u9fa5]/g) || []
