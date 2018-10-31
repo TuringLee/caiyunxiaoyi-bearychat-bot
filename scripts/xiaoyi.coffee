@@ -9,8 +9,8 @@ IS_AUTO = 'XIAOYI_ROOM_IS_AUTO_'
 XIAOYI_API_TOKEN = process.env.XIAOYI_API_TOKEN
 XIAOYI_AROUSE_KEYWORD = /^(小译 |xiaoyi |lingocloud |LingoCloud )|@<==bxc32=>/i
 STORY_KEYWORD = /故事|讲故事|讲个故事|讲个故事关于|讲个故事 关于/
-STORY_SOCKET = 'ws://192.168.1.76:7785/ws'
-# STORY_SOCKET = 'ws://story.in.caiyunai.com/ws'
+# STORY_SOCKET = 'ws://192.168.1.76:7785/ws'
+STORY_SOCKET = 'ws://story.in.caiyunai.com/ws'
 WebSocketClient = require('websocket').client
 
 if !XIAOYI_API_TOKEN
@@ -153,7 +153,7 @@ connectStoryteller = (res, text, fromId) ->
     connection.on('message', (message) ->
       # console.log("Received: ", message)
       if (message.type == 'utf8')
-        console.log("Received: '" + message.utf8Data + "'")
+        # console.log("Received: '" + message.utf8Data + "'")
         json = JSON.parse message.utf8Data
         res.send json.target[0]
     )
