@@ -50,6 +50,7 @@ xiaoyi-bearychat-bot
 聊天内容翻译还不满足？直接给你翻译英文网页好不好？
 
 并且中英对照，排版精美！
+
 github 热门issue翻译现场
 
 ![9.png](pictures/9.png)
