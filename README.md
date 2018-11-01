@@ -6,13 +6,15 @@ xiaoyi-bearychat-bot
 
 **场景一** 实时翻译
 和外国同事协作时无奈英文水平捉急，单词都认识就是不知道什么意思？小译机器人来帮你！
-![d8e95eb920b2e8c0ab04dc50c581baa3.png](evernotecid://E9CA1FB3-BCAE-44CE-A86A-1A267EF47D8D/appyinxiangcom/17373016/ENResource/p292)
+![1](pictures/1.png)
+
 我下班前就搞定这个文档，然而...
-都第二天中午了，我还没下班...![95c806a4bc4d33881891fa9ab6a246de.png](evernotecid://E9CA1FB3-BCAE-44CE-A86A-1A267EF47D8D/appyinxiangcom/17373016/ENResource/p293)
+都第二天中午了，我还没下班...
+
 
 **场景二** 单句翻译
 很多时候只想翻译某一句话？ 没问题，只要喊一声小译关门，接下来就只有“小译”开头的句子才翻译了。
-![25fc8516b3d197fddf850ce3ad6fc708.png](evernotecid://E9CA1FB3-BCAE-44CE-A86A-1A267EF47D8D/appyinxiangcom/17373016/ENResource/p295)
+
 
 你可以这样膜一下为中国互联网鞠躬尽瘁的程序员们：
 ![20b076d6d0e7a389f3623cbd88fe17c2.png](evernotecid://E9CA1FB3-BCAE-44CE-A86A-1A267EF47D8D/appyinxiangcom/17373016/ENResource/p278)
